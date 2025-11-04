@@ -31,29 +31,7 @@ export default function HeaderBrandKit() {
     }
   }, [dropdownContent]);
 
-  return (
-    <div className="relative">
-      <Link
-        className="flex items-center gap-2 relative brand-kit-menu"
-        href="/"
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setOpen(!open);
-
-          if (!open) {
-            clearDropdown(true);
-          }
-        }}
-      >
-        <FirecrawlIcon className="size-28 -top-2 relative" />
-        <Logo />
-      </Link>
-
-      <AnimatePresence initial={false} mode="popLayout">
-        {open && <Menu setOpen={setOpen} />}
-      </AnimatePresence>
-    </div>
-  );
+ 
 }
 
 const Menu = ({ setOpen }: { setOpen: (open: boolean) => void }) => {

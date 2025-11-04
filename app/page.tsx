@@ -213,21 +213,8 @@ export default function HomePage() {
 
           <HeaderWrapper>
             <div className="max-w-[900px] mx-auto w-full flex justify-between items-center">
-              <div className="flex gap-24 items-center">
-                <HeaderBrandKit />
-              </div>
-              <div className="flex gap-8">
-                <a
-                  className="contents"
-                  href="https://github.com/mendableai/open-lovable"
-                  target="_blank"
-                >
-                  <ButtonUI variant="tertiary">
-                    <GithubIcon />
-                    Use this Template
-                  </ButtonUI>
-                </a>
-              </div>
+              
+              
             </div>
           </HeaderWrapper>
         </div>
@@ -251,7 +238,7 @@ export default function HomePage() {
                 href="#"
                 onClick={(e) => e.preventDefault()}
               >
-                Powered by Firecrawl.
+            
               </Link>
             </div>
           </div>
