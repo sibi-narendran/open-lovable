@@ -3101,6 +3101,8 @@ Focus on the key sections and content, making it clean and modern.`;
               ))}
             </select>
           )}
+        </div>
+        <div className="flex items-center gap-2">
           <button 
             onClick={() => createSandbox()}
             className="p-8 rounded-lg transition-colors bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100"
