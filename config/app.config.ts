@@ -51,7 +51,7 @@ export const appConfig = {
   // AI Model Configuration
   ai: {
     // Default AI model
-    defaultModel: 'moonshotai/kimi-k2-instruct-0905',
+    defaultModel: 'google/gemini-2.0-flash-exp',
     
     // Available models
     availableModels: [
@@ -105,7 +105,7 @@ export const appConfig = {
   // UI Configuration
   ui: {
     // Show/hide certain UI elements
-    showModelSelector: true,
+    showModelSelector: false,
     showStatusIndicator: true,
     
     // Animation durations (milliseconds)

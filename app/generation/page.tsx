@@ -3070,50 +3070,37 @@ Focus on the key sections and content, making it clean and modern.`;
     }, 500);
   };
 
-  // Handle initial chat message from home page
-  useEffect(() => {
-    const initialMessage = sessionStorage.getItem('initialChatMessage');
-    if (initialMessage && sandboxData) {
-      sessionStorage.removeItem('initialChatMessage');
-      
-      // Add user message to chat
-      addChatMessage(initialMessage, 'user');
-      
-      // Automatically send to AI
-      setTimeout(() => {
-        setAiChatInput(initialMessage);
-        // Trigger send by calling the send function
-        // We'll do this by setting state and letting another effect handle it
-      }, 300);
-    }
-  }, [sandboxData]);
+// OR better yet - move this into the createSandbox callback:
+// After setSandboxData() is called, immediately check for initialMessage there
 
   return (
     <HeaderProvider>
       <div className="font-sans bg-background text-foreground h-screen flex flex-col">
       <div className="bg-white py-[15px] py-[8px] border-b border-border-faint flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-2">
-          {/* Model Selector - Left side */}
-          <select
-            value={aiModel}
-            onChange={(e) => {
-              const newModel = e.target.value;
-              setAiModel(newModel);
-              const params = new URLSearchParams(searchParams);
-              params.set('model', newModel);
-              if (sandboxData?.sandboxId) {
-                params.set('sandbox', sandboxData.sandboxId);
-              }
-              router.push(`/generation?${params.toString()}`);
-            }}
-            className="px-3 py-1.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-300 transition-colors"
-          >
-            {appConfig.ai.availableModels.map(model => (
-              <option key={model} value={model}>
-                {appConfig.ai.modelDisplayNames?.[model] || model}
-              </option>
-            ))}
-          </select>
+          {/* Model Selector - Hidden by default, set showModelSelector in config */}
+          {appConfig.ui.showModelSelector && (
+            <select
+              value={aiModel}
+              onChange={(e) => {
+                const newModel = e.target.value;
+                setAiModel(newModel);
+                const params = new URLSearchParams(searchParams);
+                params.set('model', newModel);
+                if (sandboxData?.sandboxId) {
+                  params.set('sandbox', sandboxData.sandboxId);
+                }
+                router.push(`/generation?${params.toString()}`);
+              }}
+              className="px-3 py-1.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-300 transition-colors"
+            >
+              {appConfig.ai.availableModels.map(model => (
+                <option key={model} value={model}>
+                  {appConfig.ai.modelDisplayNames?.[model] || model}
+                </option>
+              ))}
+            </select>
+          )}
           <button 
             onClick={() => createSandbox()}
             className="p-8 rounded-lg transition-colors bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100"
