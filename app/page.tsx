@@ -51,6 +51,7 @@ export default function HomePage() {
   const [showSelectMessage, setShowSelectMessage] = useState<boolean>(false);
   const [showInstructionsForIndex, setShowInstructionsForIndex] = useState<number | null>(null);
   const [additionalInstructions, setAdditionalInstructions] = useState<string>('');
+  const [chatMessage, setChatMessage] = useState<string>("");
   const router = useRouter();
   
   // Simple URL validation
@@ -360,46 +361,33 @@ export default function HomePage() {
                       )}
                       <input
                         className="flex-1 bg-transparent text-body-input text-accent-black placeholder:text-black-alpha-48 focus:outline-none focus:ring-0 focus:border-transparent"
-                        placeholder="Enter URL or search term..."
+                        placeholder="What do you want to build? "
                         type="text"
-                        value={url}
-                        disabled={isSearching}
+                        value={chatMessage}
                         onChange={(e) => {
-                          const value = e.target.value;
-                          setUrl(value);
-                          setIsValidUrl(validateUrl(value));
-                          // Reset search state when input changes
-                          if (value.trim() === "") {
-                            setShowSearchTiles(false);
-                            setHasSearched(false);
-                            setSearchResults([]);
-                          }
+                          setChatMessage(e.target.value);
                         }}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter" && !isSearching) {
+                          if (e.key === "Enter" && chatMessage.trim()) {
                             e.preventDefault();
-                            handleSubmit();
-                          }
-                        }}
-                        onFocus={() => {
-                          if (url.trim() && !isURL(url) && searchResults.length > 0) {
-                            setShowSearchTiles(true);
+                            sessionStorage.setItem('initialChatMessage', chatMessage);
+                            router.push('/generation');
                           }
                         }}
                       />
                       <div
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (!isSearching) {
-                            handleSubmit();
+                        onClick={() => {
+                          if (chatMessage.trim()) {
+                            sessionStorage.setItem('initialChatMessage', chatMessage);
+                            router.push('/generation');
                           }
                         }}
-                        className={isSearching ? 'pointer-events-none' : ''}
+                        className={chatMessage.trim() ? '' : 'pointer-events-none opacity-50'}
                       >
                         <HeroInputSubmitButton 
-                          dirty={url.length > 0} 
-                          buttonText={isURL(url) ? 'Scrape Site' : 'Search'} 
-                          disabled={isSearching}
+                          dirty={chatMessage.length > 0} 
+                          buttonText="Send" 
+                          disabled={!chatMessage.trim()}
                         />
                       </div>
                     </>

@@ -3070,6 +3070,24 @@ Focus on the key sections and content, making it clean and modern.`;
     }, 500);
   };
 
+  // Handle initial chat message from home page
+  useEffect(() => {
+    const initialMessage = sessionStorage.getItem('initialChatMessage');
+    if (initialMessage && sandboxData) {
+      sessionStorage.removeItem('initialChatMessage');
+      
+      // Add user message to chat
+      addChatMessage(initialMessage, 'user');
+      
+      // Automatically send to AI
+      setTimeout(() => {
+        setAiChatInput(initialMessage);
+        // Trigger send by calling the send function
+        // We'll do this by setting state and letting another effect handle it
+      }, 300);
+    }
+  }, [sandboxData]);
+
   return (
     <HeaderProvider>
       <div className="font-sans bg-background text-foreground h-screen flex flex-col">
