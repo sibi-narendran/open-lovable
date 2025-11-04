@@ -26,7 +26,9 @@ import HeaderBrandKit from "@/components/shared/header/BrandKit/BrandKit";
 import HeaderWrapper from "@/components/shared/header/Wrapper/Wrapper";
 import HeaderDropdownWrapper from "@/components/shared/header/Dropdown/Wrapper/Wrapper";
 import GithubIcon from "@/components/shared/header/Github/_svg/GithubIcon";
-import ButtonUI from "@/components/ui/shadcn/button"
+import ButtonUI from "@/components/ui/shadcn/button";
+import FirecrawlIcon from "@/components/FirecrawlIcon";
+import FirecrawlLogo from "@/components/FirecrawlLogo";
 
 interface SearchResult {
   url: string;
@@ -213,8 +215,20 @@ export default function HomePage() {
 
           <HeaderWrapper>
             <div className="max-w-[900px] mx-auto w-full flex justify-between items-center">
-              
-              
+              <div className="flex gap-24 items-center">
+                <Link href="/" className="flex items-center gap-2">
+            
+                </Link>
+              </div>
+
+              <div className="flex gap-8">
+                <ButtonUI variant="tertiary">
+                  Login
+                </ButtonUI>
+                <ButtonUI variant="primary">
+                  Get Started
+                </ButtonUI>
+              </div>
             </div>
           </HeaderWrapper>
         </div>
@@ -231,7 +245,7 @@ export default function HomePage() {
               <HomeHeroBadge />
               <HomeHeroTitle />
               <p className="text-center text-body-large">
-                Re-imagine any website, in seconds.
+                Imagine, Build.
               </p>
               <Link
                 className="bg-black-alpha-4 hover:bg-black-alpha-6 rounded-6 px-8 lg:px-6 text-label-large h-30 lg:h-24 block mt-8 mx-auto w-max gap-4 transition-all"
