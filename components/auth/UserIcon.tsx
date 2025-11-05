@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/shadcn/dropdown-menu";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -21,17 +21,6 @@ export default function UserIcon() {
     return null;
   }
 
-  // Get user initials from email
-  const getInitials = (email: string) => {
-    const parts = email.split("@");
-    const username = parts[0];
-    if (username.length >= 2) {
-      return username.substring(0, 2).toUpperCase();
-    }
-    return username.substring(0, 1).toUpperCase();
-  };
-
-  const initials = user.email ? getInitials(user.email) : "U";
   const displayEmail = user.email || "User";
 
   const handleSignOut = async () => {
@@ -49,7 +38,7 @@ export default function UserIcon() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex items-center justify-center w-10 h-10 rounded-full bg-black-alpha-6 hover:bg-black-alpha-8 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black-alpha-8"
+          className="flex items-center justify-center w-32 h-32 rounded-full bg-black-alpha-6 hover:bg-black-alpha-8 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black-alpha-8"
           aria-label="User menu"
         >
           {user.user_metadata?.avatar_url ? (
@@ -59,9 +48,7 @@ export default function UserIcon() {
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
-            <span className="text-sm font-medium text-accent-black">
-              {initials}
-            </span>
+            <User className="h-30 w-30 text-orange-500" />
           )}
         </button>
       </DropdownMenuTrigger>
