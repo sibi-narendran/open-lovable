@@ -26,7 +26,7 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Open Lovable v2",
+  title: "Appzap",
   description: "Imagine, build.",
 };
 
