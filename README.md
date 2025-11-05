@@ -28,6 +28,11 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url      # https://supabase.com/d
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key    # https://supabase.com/dashboard/project/_/settings/api
 
 # =================================================================
+# APPLICATION URL (Required for production magic link authentication)
+# =================================================================
+NEXT_PUBLIC_APP_URL=https://your-production-domain.com  # Your production domain URL (omit for localhost in development)
+
+# =================================================================
 # AI PROVIDER - Choose your LLM
 # =================================================================
 ANTHROPIC_API_KEY=your_anthropic_api_key  # https://console.anthropic.com
@@ -89,12 +94,16 @@ This project uses [Supabase](https://supabase.com) for user authentication with 
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+   # For production deployment - set your production domain URL
+   NEXT_PUBLIC_APP_URL=https://your-production-domain.com
    ```
 
 4. **Configure Email Redirect URL**
    - In Supabase Dashboard → Authentication → URL Configuration
    - Add your redirect URL: `http://localhost:3000/auth/callback` (for development)
    - Add your production URL: `https://your-domain.com/auth/callback` (for production)
+   
+   **Important**: The `NEXT_PUBLIC_APP_URL` environment variable must match your production domain to ensure magic links work correctly in production. The application automatically uses this URL for generating magic link callback URLs when deployed.
 
 ### Authentication Flow
 

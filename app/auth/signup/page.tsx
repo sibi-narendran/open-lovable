@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Link from "next/link";
+import { getAuthCallbackUrl } from "@/lib/utils/url";
 
 function SignUpPageContent() {
   const searchParams = useSearchParams();
@@ -50,7 +51,7 @@ function SignUpPageContent() {
       const { error: signUpError } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: getAuthCallbackUrl(),
           // Magic links automatically create a new account if user doesn't exist
         },
       });
