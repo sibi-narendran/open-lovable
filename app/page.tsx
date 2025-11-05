@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { appConfig } from '@/config/app.config';
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import UserIcon from "@/components/auth/UserIcon";
 
 // Import shared components
 import { Connector } from "@/components/shared/layout/curvy-rect";
@@ -53,6 +55,7 @@ export default function HomePage() {
   const [additionalInstructions, setAdditionalInstructions] = useState<string>('');
   const [chatMessage, setChatMessage] = useState<string>("");
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   
   // Simple URL validation
   const validateUrl = (urlString: string) => {
@@ -222,13 +225,30 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              <div className="flex gap-8">
-                <ButtonUI variant="tertiary">
-                  Login
-                </ButtonUI>
-                <ButtonUI variant="primary">
-                  Get Started
-                </ButtonUI>
+              <div className="flex gap-8 items-center">
+                {authLoading ? (
+                  // Loading state - show nothing or a placeholder
+                  <div className="w-10 h-10" />
+                ) : user ? (
+                  // Authenticated - show user icon
+                  <UserIcon />
+                ) : (
+                  // Not authenticated - show Login and Get Started buttons
+                  <>
+                    <ButtonUI
+                      variant="tertiary"
+                      onClick={() => router.push("/auth")}
+                    >
+                      Login
+                    </ButtonUI>
+                    <ButtonUI
+                      variant="primary"
+                      onClick={() => router.push("/auth")}
+                    >
+                      Get Started
+                    </ButtonUI>
+                  </>
+                )}
               </div>
             </div>
           </HeaderWrapper>

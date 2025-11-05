@@ -22,6 +22,12 @@ pnpm install  # or npm install / yarn install
 FIRECRAWL_API_KEY=your_firecrawl_api_key    # https://firecrawl.dev
 
 # =================================================================
+# AUTHENTICATION - Supabase (Required for user authentication)
+# =================================================================
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url      # https://supabase.com/dashboard/project/_/settings/api
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key    # https://supabase.com/dashboard/project/_/settings/api
+
+# =================================================================
 # AI PROVIDER - Choose your LLM
 # =================================================================
 ANTHROPIC_API_KEY=your_anthropic_api_key  # https://console.anthropic.com
@@ -61,6 +67,79 @@ pnpm dev  # or npm run dev / yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+## Authentication
+
+This project uses [Supabase](https://supabase.com) for user authentication with magic link email authentication.
+
+### Setup Supabase
+
+1. **Create a Supabase Project**
+   - Go to [https://supabase.com](https://supabase.com)
+   - Create a new project or use an existing one
+   - Wait for the project to be fully provisioned
+
+2. **Get Your Credentials**
+   - Navigate to Project Settings → API
+   - Copy your Project URL (`NEXT_PUBLIC_SUPABASE_URL`)
+   - Copy your `anon` public key (`NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+
+3. **Configure Environment Variables**
+   - Add the Supabase credentials to your `.env.local` file:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+   ```
+
+4. **Configure Email Redirect URL**
+   - In Supabase Dashboard → Authentication → URL Configuration
+   - Add your redirect URL: `http://localhost:3000/auth/callback` (for development)
+   - Add your production URL: `https://your-domain.com/auth/callback` (for production)
+
+### Authentication Flow
+
+1. **User enters email** → Navigate to `/auth` page
+2. **Magic link sent** → User receives email with authentication link
+3. **User clicks link** → Redirected to `/auth/callback` route
+4. **Session created** → User is authenticated and redirected to home page
+5. **Auth state persists** → Session is maintained across page refreshes using cookies
+
+### Authentication Features
+
+- ✅ Magic link email authentication (passwordless)
+- ✅ Session persistence across page refreshes
+- ✅ Auth state management via React Context
+- ✅ Conditional UI rendering based on auth state
+- ✅ User profile dropdown with logout
+- ✅ Server-side and client-side auth handling
+
+### Files Created
+
+The following files were created for authentication:
+
+- `lib/supabase/client.ts` - Browser-side Supabase client
+- `lib/supabase/server.ts` - Server-side Supabase client for Next.js
+- `lib/supabase/middleware.ts` - Middleware helper for auth state management
+- `app/auth/page.tsx` - Email entry form for magic link authentication
+- `app/auth/callback/route.ts` - Callback handler for magic link authentication
+- `contexts/AuthContext.tsx` - React context for auth state management
+- `components/auth/UserIcon.tsx` - User avatar/icon component with dropdown menu
+
+### Files Modified
+
+The following files were modified:
+
+- `app/layout.tsx` - Added `AuthProvider` wrapper to make auth state available app-wide
+- `app/page.tsx` - Updated header to conditionally show Login/Get Started buttons or user icon
+
+### Technical Details
+
+- **Server-side auth**: Uses `@supabase/ssr` for Next.js App Router compatibility
+- **Client-side auth**: Uses `@supabase/supabase-js` via SSR wrapper for browser operations
+- **Session management**: Cookie-based session storage for persistence
+- **UI components**: Radix UI `DropdownMenu` for accessible user menu
+- **State management**: React Context API for global auth state
+- **Auth state listener**: Real-time updates via Supabase `onAuthStateChange` event
 
 ## License
 
