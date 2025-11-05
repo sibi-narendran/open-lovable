@@ -21,7 +21,10 @@ export function AsciiExplosion(attrs: HTMLAttributes<HTMLDivElement>) {
         if (index >= data.length) index = -40;
         if (index < 0) return;
 
-        ref.current!.innerHTML = data[index];
+        // Check if ref is still mounted before setting innerHTML
+        if (ref.current) {
+          ref.current.innerHTML = data[index];
+        }
       },
       interval: 40,
     });

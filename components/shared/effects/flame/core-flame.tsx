@@ -20,7 +20,10 @@ export function CoreFlame(attrs: HTMLAttributes<HTMLDivElement>) {
 
         const newStr = data[index];
 
-        ref.current!.innerHTML = newStr;
+        // Check if ref is still mounted before setting innerHTML
+        if (ref.current) {
+          ref.current.innerHTML = newStr;
+        }
       },
       interval: 80,
     });

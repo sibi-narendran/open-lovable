@@ -20,8 +20,13 @@ export default function HeroFlame() {
         index++;
         if (index >= data.length) index = 0;
 
-        ref.current!.innerHTML = data[index];
-        ref2.current!.innerHTML = data[index];
+        // Check if refs are still mounted before setting innerHTML
+        if (ref.current) {
+          ref.current.innerHTML = data[index];
+        }
+        if (ref2.current) {
+          ref2.current.innerHTML = data[index];
+        }
       },
       interval: 85,
     });
