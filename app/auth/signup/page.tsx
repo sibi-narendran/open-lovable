@@ -131,17 +131,6 @@ function SignUpPageContent() {
                 Click the link in the email to create your account. The link will expire in
                 1 hour.
               </p>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setEmailSent(false);
-                  setEmail("");
-                  setError(null);
-                }}
-                className="w-full"
-              >
-                Send another email
-              </Button>
             </div>
           ) : (
             // Email form
