@@ -391,24 +391,40 @@ export default function HomePage() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter" && chatMessage.trim()) {
                             e.preventDefault();
-                            sessionStorage.setItem('initialChatMessage', chatMessage);
-                            router.push('/generation');
+                            // Check if user is authenticated
+                            if (!user && !authLoading) {
+                              router.push('/auth/signup');
+                              return;
+                            }
+                            // Only proceed if authenticated
+                            if (user) {
+                              sessionStorage.setItem('initialChatMessage', chatMessage);
+                              router.push('/generation');
+                            }
                           }
                         }}
                       />
                       <div
                         onClick={() => {
                           if (chatMessage.trim()) {
-                            sessionStorage.setItem('initialChatMessage', chatMessage);
-                            router.push('/generation');
+                            // Check if user is authenticated
+                            if (!user && !authLoading) {
+                              router.push('/auth/signup');
+                              return;
+                            }
+                            // Only proceed if authenticated
+                            if (user) {
+                              sessionStorage.setItem('initialChatMessage', chatMessage);
+                              router.push('/generation');
+                            }
                           }
                         }}
-                        className={chatMessage.trim() ? '' : 'pointer-events-none opacity-50'}
+                        className={chatMessage.trim() && !authLoading ? '' : 'pointer-events-none opacity-50'}
                       >
                         <HeroInputSubmitButton 
                           dirty={chatMessage.length > 0} 
                           buttonText="Send" 
-                          disabled={!chatMessage.trim()}
+                          disabled={!chatMessage.trim() || authLoading}
                         />
                       </div>
                     </>
