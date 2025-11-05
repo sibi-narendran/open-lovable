@@ -204,8 +204,9 @@ export default function HomePage() {
   };
 
   return (
-    <HeaderProvider>
-      <div className="min-h-screen bg-background-base">
+    <>
+      <HeaderProvider>
+      <div className="min-h-screen bg-background-base relative">
         {/* Header/Navigation Section */}
         <HeaderDropdownWrapper />
 
@@ -237,13 +238,13 @@ export default function HomePage() {
                   <>
                     <ButtonUI
                       variant="tertiary"
-                      onClick={() => router.push("/auth")}
+                      onClick={() => router.push("/auth/signin")}
                     >
                       Login
                     </ButtonUI>
                     <ButtonUI
                       variant="primary"
-                      onClick={() => router.push("/auth")}
+                      onClick={() => router.push("/auth/signup")}
                     >
                       Get Started
                     </ButtonUI>
@@ -811,5 +812,6 @@ export default function HomePage() {
         }
       `}</style>
     </HeaderProvider>
+    </>
   );
 }
