@@ -76,28 +76,34 @@ function SignInPageContent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background-base px-4 py-12">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-6">
-            <h1 className="text-2xl font-bold text-accent-black">Appzap</h1>
-          </Link>
-          <h2 className="text-3xl font-semibold text-accent-black mb-2">
-            {emailSent ? "Check your email" : "Sign in"}
-          </h2>
-          <p className="text-body-medium text-black-alpha-48">
-            {emailSent
-              ? "We've sent a magic link to your email address"
-              : "Welcome back! Enter your email to sign in"}
-          </p>
-        </div>
-
+      <div className="w-full max-w-lg">
         {/* Card */}
-        <div className="bg-white rounded-20 p-8 shadow-lg border border-zinc-200">
+        <div className="bg-white rounded-20 py-150 px-50 shadow-lg border border-zinc-200 relative">
+          {/* Back Arrow - positioned inside the card */}
+          <div className="absolute top-15 left-10">
+            <Link 
+              href="/" 
+              className="flex items-center justify-center w-25 h-25 bg-gray-50 hover:bg-gray-100 rounded-full border border-gray-200 transition-all duration-200 hover:shadow-sm group"
+            >
+              <svg
+                className="w-25 h-25 text-gray-600 group-hover:text-gray-900 transition-colors"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+            </Link>
+          </div>
           {emailSent ? (
             // Success state
             <div className="text-center">
-              <div className="mb-6">
+              <div className="mb-16">
                 <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center">
                   <svg
                     className="w-8 h-8 text-green-600"
@@ -114,14 +120,14 @@ function SignInPageContent() {
                   </svg>
                 </div>
               </div>
-              <p className="text-body-medium text-accent-black mb-2">
+              <p className="text-body-medium text-accent-black mb-8">
                 Magic link sent to
               </p>
-              <p className="text-body-medium font-medium text-accent-black mb-6">
+              <p className="text-body-medium font-medium text-accent-black mb-12">
                 {email}
               </p>
-              <p className="text-sm text-black-alpha-48 mb-6">
-                Click the link in the email to sign in. The link will expire in
+              <p className="text-sm text-black-alpha-48 mb-16">
+                Click the link in the email to sign in to your account. The link will expire in
                 1 hour.
               </p>
               <Button
@@ -138,48 +144,61 @@ function SignInPageContent() {
             </div>
           ) : (
             // Email form
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-accent-black mb-2"
-                >
-                  Email address
-                </label>
+            <form onSubmit={handleSubmit} className="space-y-10">
+              {/* Logo */}
+              <div className="text-center pt-12 mb-12">
+                <h1 className="text-4xl font-bold">
+                  <span className="text-gray-900">Appzap</span>
+                  <span className="text-orange-500">.co</span>
+                </h1>
+              </div>
+
+              {/* Heading */}
+              <div className="text-center mb-[150px]">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  sign in to your account
+                </h2>
+                <p className="text-base text-gray-600">
+                </p>
+              </div>
+
+              {/* Email Input */}
+              <div className="space-y-10 mt-[150px]">
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
                     setError(null);
                   }}
                   disabled={loading}
-                  className="w-full"
+                  className="w-full h-20 text-base px-5 py-25"
                   autoFocus
                   autoComplete="email"
                 />
                 {error && (
-                  <p className="mt-2 text-sm text-red-500">{error}</p>
+                  <p className="text-sm text-red-500">{error}</p>
                 )}
               </div>
 
+              {/* Button */}
               <Button
                 type="submit"
-                variant="default"
                 disabled={loading || !email.trim()}
-                className="w-full"
+                className="w-full h-45 bg-[#FFE5CC] hover:bg-[#FFD9B3] text-gray-900 font-medium text-base rounded-lg"
               >
-                {loading ? "Sending..." : "Send magic link"}
+                {loading ? "Sending..." : "Sign In"}
               </Button>
 
-              <div className="text-center">
-                <p className="text-sm text-black-alpha-48">
+              {/* Sign up link */}
+              <div className="text-center mt-6">
+                <p className="text-sm text-gray-600">
                   Don't have an account?{" "}
                   <Link
                     href="/auth/signup"
-                    className="text-accent-black hover:underline font-medium"
+                    className="text-gray-900 hover:underline font-medium"
                   >
                     Sign up
                   </Link>
@@ -187,16 +206,6 @@ function SignInPageContent() {
               </div>
             </form>
           )}
-        </div>
-
-        {/* Footer */}
-        <div className="mt-6 text-center">
-          <Link
-            href="/"
-            className="text-sm text-black-alpha-48 hover:text-accent-black transition-colors"
-          >
-            ← Back to home
-          </Link>
         </div>
       </div>
     </div>
