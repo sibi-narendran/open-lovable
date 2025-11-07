@@ -47,12 +47,8 @@ export async function POST() {
     // Register with sandbox manager
     sandboxManager.registerSandbox(sandboxInfo.sandboxId, provider);
     
-    // Also store in legacy global state for backward compatibility
+    // Fallback for legacy code
     global.activeSandboxProvider = provider;
-    global.sandboxData = {
-      sandboxId: sandboxInfo.sandboxId,
-      url: sandboxInfo.url
-    };
     
     // Initialize sandbox state
     global.sandboxState = {
@@ -74,7 +70,7 @@ export async function POST() {
       success: true,
       sandboxId: sandboxInfo.sandboxId,
       url: sandboxInfo.url,
-      provider: sandboxInfo.provider,
+      provider: provider.name, // Use provider.name to get the name
       message: 'Sandbox created and Vite React app initialized'
     });
 

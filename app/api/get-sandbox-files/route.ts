@@ -7,44 +7,41 @@ declare global {
   var activeSandbox: any;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    if (!global.activeSandbox) {
+    // Get sandboxId from query params
+    const { searchParams } = new URL(request.url);
+    const sandboxId = searchParams.get('sandboxId');
+
+    if (!sandboxId) {
       return NextResponse.json({
         success: false,
-        error: 'No active sandbox'
+        error: 'Missing sandboxId parameter'
+      }, { status: 400 });
+    }
+
+    // For now, we still need the global sandbox provider
+    // In production, you'd want to retrieve the sandbox by ID from a database
+    if (!global.activeSandboxProvider) {
+      return NextResponse.json({
+        success: false,
+        error: 'No active sandbox provider'
       }, { status: 404 });
     }
 
+    console.log('[get-sandbox-files] Fetching files for sandbox:', sandboxId);
     console.log('[get-sandbox-files] Fetching and analyzing file structure...');
     
     // Get list of all relevant files
-    const findResult = await global.activeSandbox.runCommand({
-      cmd: 'find',
-      args: [
-        '.',
-        '-name', 'node_modules', '-prune', '-o',
-        '-name', '.git', '-prune', '-o',
-        '-name', 'dist', '-prune', '-o',
-        '-name', 'build', '-prune', '-o',
-        '-type', 'f',
-        '(',
-        '-name', '*.jsx',
-        '-o', '-name', '*.js',
-        '-o', '-name', '*.tsx',
-        '-o', '-name', '*.ts',
-        '-o', '-name', '*.css',
-        '-o', '-name', '*.json',
-        ')',
-        '-print'
-      ]
-    });
+    const findResult = await global.activeSandboxProvider.runCommand(
+      'find . -name node_modules -prune -o -name .git -prune -o -name dist -prune -o -name build -prune -o -type f \\( -name "*.jsx" -o -name "*.js" -o -name "*.tsx" -o -name "*.ts" -o -name "*.css" -o -name "*.json" \\) -print'
+    );
     
     if (findResult.exitCode !== 0) {
       throw new Error('Failed to list files');
     }
     
-    const fileList = (await findResult.stdout()).split('\n').filter((f: string) => f.trim());
+    const fileList = findResult.stdout.split('\n').filter((f: string) => f.trim());
     console.log('[get-sandbox-files] Found', fileList.length, 'files');
     
     // Read content of each file (limit to reasonable sizes)
@@ -53,23 +50,17 @@ export async function GET() {
     for (const filePath of fileList) {
       try {
         // Check file size first
-        const statResult = await global.activeSandbox.runCommand({
-          cmd: 'stat',
-          args: ['-f', '%z', filePath]
-        });
+        const statResult = await global.activeSandboxProvider.runCommand(`stat -f '%z' "${filePath}"`);
         
         if (statResult.exitCode === 0) {
-          const fileSize = parseInt(await statResult.stdout());
+          const fileSize = parseInt(statResult.stdout.trim());
           
           // Only read files smaller than 10KB
           if (fileSize < 10000) {
-            const catResult = await global.activeSandbox.runCommand({
-              cmd: 'cat',
-              args: [filePath]
-            });
+            const catResult = await global.activeSandboxProvider.runCommand(`cat "${filePath}"`);
             
             if (catResult.exitCode === 0) {
-              const content = await catResult.stdout();
+              const content = catResult.stdout;
               // Remove leading './' from path
               const relativePath = filePath.replace(/^\.\//, '');
               filesContent[relativePath] = content;
@@ -84,14 +75,13 @@ export async function GET() {
     }
     
     // Get directory structure
-    const treeResult = await global.activeSandbox.runCommand({
-      cmd: 'find',
-      args: ['.', '-type', 'd', '-not', '-path', '*/node_modules*', '-not', '-path', '*/.git*']
-    });
+    const treeResult = await global.activeSandboxProvider.runCommand(
+      'find . -type d -not -path "*/node_modules*" -not -path "*/.git*"'
+    );
     
     let structure = '';
     if (treeResult.exitCode === 0) {
-      const dirs = (await treeResult.stdout()).split('\n').filter((d: string) => d.trim());
+      const dirs = treeResult.stdout.split('\n').filter((d: string) => d.trim());
       structure = dirs.slice(0, 50).join('\n'); // Limit to 50 lines
     }
     

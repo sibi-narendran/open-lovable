@@ -44,19 +44,29 @@ interface ChatMessage {
   };
 }
 
+// Add at top of AISandboxPage
+async function killSandbox() {
+  try {
+    await fetch('/api/kill-sandbox', { method: 'POST' });
+    console.log('[home] Killed existing sandbox');
+  } catch (error) {
+    console.error('[home] Failed to kill sandbox:', error);
+  }
+}
+
 function AISandboxPage() {
   const [sandboxData, setSandboxData] = useState<SandboxData | null>(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ text: 'Not connected', active: false });
   const [responseArea, setResponseArea] = useState<string[]>([]);
-  const [structureContent, setStructureContent] = useState('No sandbox created yet');
+  const [structureContent, setStructureContent] = useState('No sandbsox created yet');
   const [promptInput, setPromptInput] = useState('');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-  //  {
-    //  content: 'Welcome! I can help you generate code with full context of your sandbox files and structure. Just start chatting - I\'ll automatically create a sandbox for you if needed!\n\nTip: If you see package errors like "react-router-dom not found", just type "npm install" or "check packages" to automatically install missing packages.',
-     // type: 'system',
-     // timestamp: new Date()
-    //}
+   {
+      content: 'Welcome!',
+     type: 'system',
+      timestamp: new Date()
+    }
   ]);
   const [aiChatInput, setAiChatInput] = useState('');
   const [aiEnabled] = useState(true);
@@ -250,24 +260,8 @@ function AISandboxPage() {
       
       setLoading(true);
       try {
-        if (sandboxIdParam) {
-          console.log('[home] Attempting to restore sandbox:', sandboxIdParam);
-          // For now, just create a new sandbox - you could enhance this to actually restore
-          // the specific sandbox if your backend supports it
-          sandboxCreated = true;
-          await createSandbox(true);
-        } else {
-          console.log('[home] No sandbox in URL, creating new sandbox automatically...');
-          sandboxCreated = true;
-          await createSandbox(true);
-        }
-        
-        // If we have a URL from the home page, mark for automatic start
-        if (storedUrl && isMounted) {
-          // We'll trigger the generation after the component is fully mounted
-          // and the startGeneration function is defined
-          sessionStorage.setItem('autoStart', 'true');
-        }
+        await killSandbox();
+        await createSandbox(true);
       } catch (error) {
         console.error('[ai-sandbox] Failed to create or restore sandbox:', error);
         if (isMounted) {
@@ -1048,10 +1042,10 @@ Tip: I automatically detect and install npm packages from your code imports (lik
   };
 
   const fetchSandboxFiles = async () => {
-    if (!sandboxData) return;
+    if (!sandboxData?.sandboxId) return;
     
     try {
-      const response = await fetch('/api/get-sandbox-files', {
+      const response = await fetch(`/api/get-sandbox-files?sandboxId=${encodeURIComponent(sandboxData.sandboxId)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

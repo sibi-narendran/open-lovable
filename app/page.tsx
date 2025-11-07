@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { appConfig } from '@/config/app.config';
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import UserIcon from "@/components/auth/UserIcon";
 
 // Import shared components
@@ -40,7 +41,7 @@ interface SearchResult {
   markdown: string;
 }
 
-export default function HomePage() {
+function HomePageContent() {
   const [url, setUrl] = useState<string>("");
   const [selectedStyle, setSelectedStyle] = useState<string>("1");
   const [selectedModel, setSelectedModel] = useState<string>(appConfig.ai.defaultModel);
@@ -206,7 +207,7 @@ export default function HomePage() {
   return (
     <>
       <HeaderProvider>
-      <div className="min-h-screen bg-background-base relative">
+        <div className="min-h-screen bg-background-base relative">
         {/* Header/Navigation Section */}
         <HeaderDropdownWrapper />
 
@@ -827,7 +828,15 @@ export default function HomePage() {
           animation: shimmer 2s infinite;
         }
       `}</style>
-    </HeaderProvider>
+        </HeaderProvider>
     </>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <AuthProvider>
+      <HomePageContent />
+    </AuthProvider>
   );
 }

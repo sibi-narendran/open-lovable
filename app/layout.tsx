@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -39,9 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} ${robotoMono.variable} font-sans`}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        {children}
       </body>
     </html>
   );

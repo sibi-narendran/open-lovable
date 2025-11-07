@@ -70,18 +70,26 @@ export class E2BProvider extends SandboxProvider {
     }
   }
 
-  async runCommand(command: string): Promise<CommandResult> {
+  async runCommand(command: string | { cmd: string; args: string[] }): Promise<CommandResult> {
     if (!this.sandbox) {
       throw new Error('No active sandbox');
     }
 
-    
+    let commandStr: string;
+    if (typeof command === 'string') {
+      commandStr = command;
+    } else if (typeof command === 'object' && command.cmd && Array.isArray(command.args)) {
+      commandStr = `${command.cmd} ${command.args.join(' ')}`;
+    } else {
+      throw new Error('Invalid command format. Must be string or { cmd: string, args: string[] }');
+    }
+
     const result = await this.sandbox.runCode(`
       import subprocess
       import os
 
       os.chdir('/home/user/app')
-      result = subprocess.run(${JSON.stringify(command.split(' '))}, 
+      result = subprocess.run(${JSON.stringify(commandStr.split(' '))}, 
                             capture_output=True, 
                             text=True, 
                             shell=False)
@@ -390,10 +398,14 @@ print('✓ src/index.css')
 print('\\nAll files created successfully!')
 `;
 
-    await this.sandbox.runCode(setupScript);
-    
+    const setupResult = await this.sandbox.runCode(setupScript);
+    console.log('[E2B setupViteApp] Setup script output:', setupResult.logs.stdout.join('\n'));
+    if (setupResult.logs.stderr.length > 0) {
+      console.error('[E2B setupViteApp] Setup script errors:', setupResult.logs.stderr.join('\n'));
+    }
+
     // Install dependencies
-    await this.sandbox.runCode(`
+    const installResult = await this.sandbox.runCode(`
 import subprocess
 
 print('Installing npm packages...')
@@ -409,9 +421,13 @@ if result.returncode == 0:
 else:
     print(f'⚠ Warning: npm install had issues: {result.stderr}')
     `);
-    
+    console.log('[E2B setupViteApp] npm install output:', installResult.logs.stdout.join('\n'));
+    if (installResult.logs.stderr.length > 0) {
+      console.error('[E2B setupViteApp] npm install errors:', installResult.logs.stderr.join('\n'));
+    }
+
     // Start Vite dev server
-    await this.sandbox.runCode(`
+    const viteStartResult = await this.sandbox.runCode(`
 import subprocess
 import os
 import time
@@ -427,7 +443,7 @@ env = os.environ.copy()
 env['FORCE_COLOR'] = '0'
 
 process = subprocess.Popen(
-    ['npm', 'run', 'dev'],
+    ['npm', 'run', 'dev', '--', '--host', '0.0.0.0', '--port', '5173'],
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
     env=env
@@ -435,7 +451,30 @@ process = subprocess.Popen(
 
 print(f'✓ Vite dev server started with PID: {process.pid}')
 print('Waiting for server to be ready...')
+`);
+    console.log('[E2B setupViteApp] Vite start output:', viteStartResult.logs.stdout.join('\n'));
+    if (viteStartResult.logs.stderr.length > 0) {
+      console.error('[E2B setupViteApp] Vite start errors:', viteStartResult.logs.stderr.join('\n'));
+    }
+
+    // Add health check
+    const portCheck = await this.sandbox.runCode(`
+      import subprocess
+      result = subprocess.run(['netstat', '-tuln'], capture_output=True, text=True)
+      print(result.stdout)
     `);
+    console.log('[E2B setupViteApp] Port check:', portCheck.logs.stdout.join('\n'));
+
+    // To capture ongoing Vite output, we can run a separate command to tail the logs or something, but for now, wait and check
+    await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5s
+
+    // Optionally, add a command to check if Vite is running
+    const checkVite = await this.sandbox.runCode(`
+      import subprocess
+      result = subprocess.run(['pgrep', '-f', 'vite'], capture_output=True)
+      print(result.stdout.decode())
+    `);
+    console.log('[E2B setupViteApp] Vite process check:', checkVite.logs.stdout.join('\n'));
     
     // Wait for Vite to be ready
     await new Promise(resolve => setTimeout(resolve, appConfig.e2b.viteStartupDelay));
