@@ -33,6 +33,7 @@ export interface SandboxProviderConfig {
 }
 
 export abstract class SandboxProvider {
+  abstract name: string;
   protected config: SandboxProviderConfig;
   protected sandbox: any;
   protected sandboxInfo: SandboxInfo | null = null;
