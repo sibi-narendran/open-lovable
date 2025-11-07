@@ -3,7 +3,8 @@ import { SandboxProvider, SandboxInfo, CommandResult } from '../types';
 // SandboxProviderConfig available through parent class
 import { appConfig } from '@/config/app.config';
 
-export class E2BProvider extends SandboxProvider {
+export class E2BProvider implements SandboxProvider {
+  name = 'e2b';
   private existingFiles: Set<string> = new Set();
 
   /**

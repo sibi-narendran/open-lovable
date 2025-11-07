@@ -2,7 +2,8 @@ import { Sandbox } from '@vercel/sandbox';
 import { SandboxProvider, SandboxInfo, CommandResult } from '../types';
 // SandboxProviderConfig available through parent class
 
-export class VercelProvider extends SandboxProvider {
+export class VercelProvider implements SandboxProvider {
+  name = 'vercel';
   private existingFiles: Set<string> = new Set();
 
   async createSandbox(): Promise<SandboxInfo> {
