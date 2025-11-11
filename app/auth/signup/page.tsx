@@ -60,6 +60,15 @@ function SignUpPageContent() {
         throw signUpError;
       }
 
+      // Fire Google conversion event before showing success message
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        (window as any).gtag("event", "conversion", {
+          allow_custom_scripts: true,
+          currency: "USD",
+          value: 1.0,
+        });
+      }
+
       // Success - email sent
       setEmailSent(true);
       toast.success("Magic link sent! Check your email.");
